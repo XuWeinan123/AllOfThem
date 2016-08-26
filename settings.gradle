@@ -1,1 +1,1 @@
-include ':app', ':templateapp'
+include ':app', ':templateapp', ':wolfeatsheep'

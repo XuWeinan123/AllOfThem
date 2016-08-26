@@ -1,18 +1,15 @@
-package com.aaronxu.allofthem.WolfEatSheep;
+package com.aaronxu.wolfeatsheep;
 
 import android.content.DialogInterface;
 import android.graphics.Point;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.aaronxu.allofthem.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +47,8 @@ public class WolfEatSheepActivity extends AppCompatActivity {
         mSheepPoint = new ArrayList<>();
         mWolfNumber = (TextView) findViewById(R.id.wolf_number);
         mSheepNumber = (TextView) findViewById(R.id.sheep_number);
+
+        getSupportActionBar().hide();
         //使用类集初始化BlankView
         initBlankView();
         initPoint();
@@ -167,6 +166,7 @@ public class WolfEatSheepActivity extends AppCompatActivity {
             tempIfNew = mSheepPoint.get(i);
             temp = mSheepPoint.get(i);
             if(mWolfPoint.contains(new Point(temp.x,temp.y))){
+                Log.d(TAG, "移除了: " + mSheepPoint.get(i));
                 mSheepPoint.remove(i);
                 continue;
             }

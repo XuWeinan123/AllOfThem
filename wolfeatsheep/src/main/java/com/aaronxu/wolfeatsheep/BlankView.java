@@ -1,4 +1,4 @@
-package com.aaronxu.allofthem.WolfEatSheep;
+package com.aaronxu.wolfeatsheep;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,9 +13,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
-
-import com.aaronxu.allofthem.R;
-import com.aaronxu.allofthem.RandomNine.utill.DensityUtil;
 
 /**
  * Created by woshi on 2016-08-24.

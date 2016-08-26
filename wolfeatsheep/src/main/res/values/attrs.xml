@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BlankView">
+        <attr name="clickable" format="boolean"/>
+        <attr name="wolf_of_sheep" format="integer"/>
+    </declare-styleable>
+</resources>
