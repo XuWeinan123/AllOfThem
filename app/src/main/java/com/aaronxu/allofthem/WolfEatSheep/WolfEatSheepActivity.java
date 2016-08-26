@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aaronxu.allofthem.R;
 
@@ -19,8 +20,10 @@ public class WolfEatSheepActivity extends AppCompatActivity {
     private static final String TAG = "WolfEatSheepActivity";
     private int i = 0;
     private int j = 0;
-    Button buttonTemplate;
-    BlankView mBlankView0_0;
+    private Button buttonTemplate;
+    private BlankView mBlankView0_0;
+    private TextView mWolfNumber;
+    private TextView mSheepNumber;
     private List<List<BlankView>> mBlankViewLists;
     private List<BlankView> mBlankViewList01;
     private List<BlankView> mBlankViewList02;
@@ -32,7 +35,7 @@ public class WolfEatSheepActivity extends AppCompatActivity {
     private List<BlankView> mBlankViewList08;
 
     private List<Point> mWolfPoint;
-    private List<Point> mSheepPoint;
+    private List<SheepPoint> mSheepPoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,8 @@ public class WolfEatSheepActivity extends AppCompatActivity {
 
         mWolfPoint = new ArrayList<>();
         mSheepPoint = new ArrayList<>();
+        mWolfNumber = (TextView) findViewById(R.id.wolf_number);
+        mSheepNumber = (TextView) findViewById(R.id.sheep_number);
         //使用类集初始化BlankView
         initBlankView();
         initPoint();
@@ -51,11 +56,26 @@ public class WolfEatSheepActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 move();
+                isGameOver();
             }
         });
     }
 
+    private boolean isGameOver() {
+        if (mSheepPoint.size() ==0){
+            Toast.makeText(this,"游戏结束",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
+    }
+
     private void move() {
+        moveWolf();
+        moveSheep();
+    }
+
+    private void moveWolf() {
+
         Point temp;
         Point temp_up;
         Point temp_down;
@@ -88,39 +108,151 @@ public class WolfEatSheepActivity extends AppCompatActivity {
                 flag = true;
             }
             if(flag) {
+                for (j=0;j<randomList.size();j++)   Log.d(TAG, "randomList: "+randomList.get(j));
                 if(randomList.size()==1){
                     temp = randomList.get(0);
+                }else if(randomList.size()==0){
+                    continue;
                 }else {
+                    Log.d(TAG, "moveWolf: " + randomList.size());
                     temp = randomList.get((int) (Math.random()*randomList.size()));
                 }
+                randomList.clear();
                 Log.d(TAG, "移动后"+i+"号"+"("+temp.x+","+temp.y+")");
                 mBlankViewLists.get(mWolfPoint.get(i).x).get(mWolfPoint.get(i).y).setmWolfOrSheep(BlankView.NOTHING);
                 mBlankViewLists.get(temp.x).get(temp.y).setmWolfOrSheep(BlankView.WOLF);
-                mWolfPoint.remove(i);
-                mWolfPoint.add(temp);
+                mWolfPoint.get(i).x=temp.x;
+                mWolfPoint.get(i).y=temp.y;
+
+                for (j=0;j<mWolfPoint.size();j++)   Log.d(TAG, "枚举: "+mWolfPoint.get(j));
             }
         }
+        mWolfNumber.setText("现在还有"+mWolfPoint.size()+"只狼");
+    }
+
+    private void moveSheep() {
+        SheepPoint tempIfNew;
+        SheepPoint temp;
+        SheepPoint temp_up;
+        SheepPoint temp_down;
+        SheepPoint temp_left;
+        SheepPoint temp_right;
+
+        boolean flag = false;
+        List<SheepPoint> randomList= new ArrayList<>();
+
+        for(i=0;i<mSheepPoint.size();i++){
+            tempIfNew = mSheepPoint.get(i);
+            temp = mSheepPoint.get(i);
+            if(mWolfPoint.contains(new Point(temp.x,temp.y))){
+                mSheepPoint.remove(i);
+                continue;
+            }
+
+            temp_left = new SheepPoint(temp.x-1,temp.y);
+            temp_right = new SheepPoint(temp.x+1,temp.y);
+            temp_up = new SheepPoint(temp.x,temp.y-1);
+            temp_down = new SheepPoint(temp.x,temp.y+1);
+
+            Log.d(TAG, "羊：移动前"+i+"号"+"("+temp.x+","+temp.y+")");
+            if(temp.x>0&&!mWolfPoint.contains(temp_left.toPoint())&&!mSheepPoint.contains(temp_left)){
+                randomList.add(temp_left);
+                flag = true;
+            }
+            if(temp.x<7&&!mWolfPoint.contains(temp_right.toPoint())&&!mSheepPoint.contains(temp_right)){
+                randomList.add(temp_right);
+                flag = true;
+            }
+            if(temp.y>0&&!mWolfPoint.contains(temp_up.toPoint())&&!mSheepPoint.contains(temp_up)){
+                randomList.add(temp_up);
+                flag = true;
+            }
+            if(temp.y<7&&!mWolfPoint.contains(temp_down.toPoint())&&!mSheepPoint.contains(temp_down)){
+                randomList.add(temp_down);
+                flag = true;
+            }
+            if(flag) {
+                for (j=0;j<randomList.size();j++)   Log.d(TAG, "羊：randomList: "+randomList.get(j));
+                if(randomList.size()==1) {
+                    temp = randomList.get(0);
+                }else if(randomList.size()==0){
+                    continue;
+                }else {
+                    temp = randomList.get((int) (Math.random()*randomList.size()));
+                }
+                randomList.clear();
+                Log.d(TAG, "羊：移动后"+i+"号"+"("+temp.x+","+temp.y+")");
+                if (mSheepPoint.get(i).age == 2){
+                    Log.d(TAG, "羊："+i+"号羊开始生娃,并将"+mSheepPoint.get(i) + "设置成了绿色.");
+                    mBlankViewLists.get(mSheepPoint.get(i).x).get(mSheepPoint.get(i).y).setmWolfOrSheep(BlankView.SHEEP);
+                    mSheepPoint.add(new SheepPoint(mSheepPoint.get(i).x,mSheepPoint.get(i).y));
+                }else {
+                    mBlankViewLists.get(mSheepPoint.get(i).x).get(mSheepPoint.get(i).y).setmWolfOrSheep(BlankView.NOTHING);
+                }
+                mBlankViewLists.get(temp.x).get(temp.y).setmWolfOrSheep(BlankView.SHEEP);
+                mSheepPoint.get(i).x=temp.x;
+                mSheepPoint.get(i).y=temp.y;
+
+                for (j=0;j<mSheepPoint.size();j++)   Log.d(TAG, "羊：枚举: "+mSheepPoint.get(j));
+            }
+
+            mSheepPoint.get(i).growUp();
+        }
+        mSheepNumber.setText("现在还有"+mSheepPoint.size()+"只羊");
+
     }
 
     private void initDraw() {
         Point temp;
+        SheepPoint sheepTemp;
         for (i=0;i<mWolfPoint.size();i++){
             temp = mWolfPoint.get(i);
             mBlankViewLists.get(temp.x).get(temp.y).setmWolfOrSheep(BlankView.WOLF);
         }
         for (i=0;i<mSheepPoint.size();i++){
-            temp = mSheepPoint.get(i);
-            mBlankViewLists.get(temp.x).get(temp.y).setmWolfOrSheep(BlankView.SHEEP);
+            sheepTemp = mSheepPoint.get(i);
+            mBlankViewLists.get(sheepTemp.x).get(sheepTemp.y).setmWolfOrSheep(BlankView.SHEEP);
         }
     }
 
     private void initPoint() {
+        mWolfPoint.add(new Point(0,0));
         mWolfPoint.add(new Point(1,0));
+        mWolfPoint.add(new Point(2,0));
+        mWolfPoint.add(new Point(3,0));
+        mWolfPoint.add(new Point(4,0));
+        mWolfPoint.add(new Point(5,0));
+        mWolfPoint.add(new Point(6,0));
+        mWolfPoint.add(new Point(7,0));
+        mWolfPoint.add(new Point(7,1));
+        mWolfPoint.add(new Point(6,1));
+        mWolfPoint.add(new Point(5,1));
+        mWolfPoint.add(new Point(4,1));
+        mWolfPoint.add(new Point(3,1));
         mWolfPoint.add(new Point(2,1));
+        mWolfPoint.add(new Point(1,1));
+        mWolfPoint.add(new Point(0,1));
+        mWolfPoint.add(new Point(7,2));
+        mWolfPoint.add(new Point(6,2));
+        mWolfPoint.add(new Point(5,2));
+        mWolfPoint.add(new Point(4,2));
+        mWolfPoint.add(new Point(3,2));
         mWolfPoint.add(new Point(2,2));
-        mSheepPoint.add(new Point(5,4));
-        mSheepPoint.add(new Point(6,7));
-        mSheepPoint.add(new Point(4,3));
+        mWolfPoint.add(new Point(1,2));
+        mWolfPoint.add(new Point(0,2));
+
+
+        mSheepPoint.add(new SheepPoint(7,7));
+//        mSheepPoint.add(new SheepPoint(6,7));
+//        mSheepPoint.add(new SheepPoint(5,7));
+//        mSheepPoint.add(new SheepPoint(4,7));
+//        mSheepPoint.add(new SheepPoint(3,7));
+
+
+//        Log.d(TAG, "initPoint: "+mSheepPoint.contains(new SheepPoint(5,4)));
+
+        mWolfNumber.setText("现在还有"+mWolfPoint.size()+"只狼");
+        mSheepNumber.setText("现在还有"+mSheepPoint.size()+"只羊");
 //        Log.d(TAG, "initPoint: "+mWolfPoint.contains(new Point(1,0)));
     }
 

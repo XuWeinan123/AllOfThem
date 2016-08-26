@@ -456,13 +456,37 @@
         <!--</LinearLayout>-->
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_template"
+        android:layout_margin="8dp"
+        >
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="现在还有0只狼"
+            android:gravity="center"
+            android:id="@+id/wolf_number"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="现在还有0只羊"
+            android:gravity="center"
+            android:id="@+id/sheep_number"
+            />
+
+
+    </LinearLayout>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Button"
         android:id="@+id/button_template"
+        android:layout_marginBottom="8dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-
-        />
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
